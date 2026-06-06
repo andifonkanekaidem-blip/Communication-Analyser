@@ -101,17 +101,20 @@ must appear in both the blind spots and the perception section.
 - **Frontend:** Vanilla HTML, CSS, JavaScript
 - **Serving:** FastAPI static file serving
 
----
-
 ## Project Structure
-project/
-├── main.py              # FastAPI app, routes, Gemini integration
-├── questions.json       # Question and answer option definitions
-├── static/
-│   └── index.html       # Frontend single-page application
-└── .env                 # API keys (not committed)
 
----
+```
+Communication-Style-Analysis/
+├── static/              # Frontend assets served by FastAPI
+│   └── index.html       # Single-page application
+├── .env                 # API keys (not committed)
+├── .gitignore           # Excludes .env and test files
+├── app.py               # FastAPI app and route definitions
+├── helper.py            # Gemini integration and prompt logic
+├── prompt.md            # Prompt documentation and version history
+├── questions.json       # Question and answer option definitions
+└── text.py              # Local testing and dev scripts
+```
 
 ## Running Locally
 
