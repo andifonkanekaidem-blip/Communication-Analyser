@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Communication Style Analyzer</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --card-border: #2d3f55;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-subtle: #64748b;
+            --neon-blue: #0055ff;
+            --neon-glow: 0 0 15px rgba(0, 85, 255, 0.4);
+            --neon-glow-strong: 0 0 25px rgba(0, 85, 255, 0.7);
+            --disabled: #334155;
+            --error-color: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0, 85, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 85, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 36px 28px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--card-border);
+            position: relative;
+            z-index: 1;
+            transition: max-width 0.4s ease;
+        }
+
+        @media (min-width: 900px) {
+            .container.results-expanded {
+                max-width: 920px;
+            }
+            .results-layout {
+                flex-direction: row !important;
+            }
+        }
+
+        /* ── SCREENS ── */
+        .screen {
+            display: none;
+            flex-direction: column;
+            animation: fadeIn 0.2s ease;
+        }
+        .screen.active { display: flex; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── INTRO ── */
+        .intro-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .app-icon {
+            width: 54px;
+            height: 54px;
+            background: linear-gradient(135deg, #0055ff, #3b82f6);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            box-shadow: var(--neon-glow);
+            font-size: 1.4rem;
+        }
+
+        .intro-header h1 {
+            font-size: 1.55rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.3px;
+        }
+
+        .intro-header .tagline {
+            font-size: 0.93rem;
+            color: var(--text-muted);
+            line-height: 1.55;
+            margin-bottom: 0;
+            text-align: center;
+        }
+
+        .intro-features {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 26px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 13px 14px;
+            background: var(--bg-color);
+            border-radius: 10px;
+            border: 1px solid var(--card-border);
+        }
+
+        .feature-icon {
+            font-size: 1rem;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .feature-text {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            line-height: 1.45;
+            text-align: left;
+            margin-bottom: 0;
+        }
+
+        .feature-text strong {
+            color: var(--text-main);
+            display: block;
+            font-size: 0.88rem;
+            margin-bottom: 2px;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 4px;
+        }
+
+        .btn-auth {
+            flex: 1;
+            padding: 13px;
+            border-radius: 8px;
+            font-size: 0.93rem;
+            font-weight: 600;
+            cursor: not-allowed;
+            border: 2px solid var(--card-border);
+            background: transparent;
+            color: var(--text-subtle);
+            opacity: 0.6;
+        }
+
+        .intro-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .intro-divider::before,
+        .intro-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--card-border);
+        }
+
+        .intro-divider span {
+            font-size: 0.78rem;
+            color: var(--text-subtle);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .intro-note {
+            font-size: 0.78rem;
+            color: var(--text-subtle);
+            text-align: center;
+            margin-top: 12px;
+            margin-bottom: 0;
+        }
+
+        /* ── TYPOGRAPHY ── */
+        h1 {
+            font-size: 1.45rem;
+            margin-bottom: 8px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            color: var(--text-main);
+            margin-bottom: 20px;
+            text-align: left;
+            font-weight: 600;
+            line-height: 1.55;
+        }
+
+        /* ── BUTTONS ── */
+        .btn-primary {
+            background-color: var(--neon-blue);
+            color: #fff;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+            box-shadow: var(--neon-glow);
+        }
+        .btn-primary:hover:not(:disabled) {
+            box-shadow: var(--neon-glow-strong);
+            transform: translateY(-1px);
+        }
+        .btn-primary:disabled {
+            background-color: var(--disabled);
+            color: #64748b;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-muted);
+            border: 2px solid #334155;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+        .btn-secondary:hover:not(:disabled) {
+            border-color: var(--text-muted);
+            color: var(--text-main);
+        }
+        .btn-secondary:disabled {
+            color: #334155;
+            border-color: #1e293b;
+            cursor: not-allowed;
+        }
+
+        .nav-controls {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        /* ── OPTIONS ── */
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+            margin-bottom: 24px;
+        }
+
+        .option-btn {
+            background-color: var(--bg-color);
+            border: 2px solid var(--card-border);
+            color: var(--text-main);
+            padding: 13px 15px;
+            border-radius: 8px;
+            text-align: left;
+            font-size: 0.93rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            line-height: 1.45;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .option-label {
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: var(--text-subtle);
+            flex-shrink: 0;
+            margin-top: 1px;
+            transition: color 0.15s ease;
+            min-width: 14px;
+        }
+
+        .option-btn:hover {
+            border-color: rgba(0, 85, 255, 0.45);
+            background-color: rgba(0, 85, 255, 0.04);
+        }
+
+        .option-btn.selected {
+            border-color: var(--neon-blue);
+            box-shadow: var(--neon-glow);
+            background-color: rgba(0, 85, 255, 0.09);
+        }
+
+        .option-btn.selected .option-label {
+            color: var(--neon-blue);
+        }
+
+        /* ── PROGRESS ── */
+        .progress-header {
+            margin-bottom: 22px;
+        }
+
+        .progress-label {
+            font-size: 0.78rem;
+            color: var(--neon-blue);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar-track {
+            width: 100%;
+            height: 3px;
+            background: var(--disabled);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--neon-blue);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 8px rgba(0, 85, 255, 0.5);
+        }
+
+        /* ── LOADING ── */
+        .loading-content {
+            text-align: center;
+            padding: 24px 0;
+        }
+
+        .loading-spinner {
+            width: 42px;
+            height: 42px;
+            border: 3px solid var(--card-border);
+            border-top-color: var(--neon-blue);
+            border-radius: 50%;
+            animation: spin 0.75s linear infinite;
+            margin: 0 auto 22px;
+            box-shadow: var(--neon-glow);
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ── RESULTS ── */
+        .results-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .result-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .result-section-label {
+            font-size: 0.75rem;
+            color: var(--neon-blue);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+            font-weight: 700;
+            text-align: left;
+        }
+
+        .result-box {
+            text-align: left;
+            color: var(--text-main);
+            white-space: pre-wrap;
+            background: var(--bg-color);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid var(--card-border);
+            flex: 1;
+            font-size: 0.92rem;
+            line-height: 1.75;
+        }
+
+        /* ── ERROR ── */
+        .error-block {
+            display: none;
+            background-color: rgba(239, 68, 68, 0.07);
+            border: 1px solid var(--error-color);
+            border-radius: 10px;
+            padding: 24px 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .error-block.active { display: flex; }
+
+        .error-text {
+            color: var(--error-color);
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
+        .error-sub {
+            font-size: 0.85rem;
+            color: var(--text-subtle);
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="main-container">
+
+    <!-- ERROR -->
+    <div id="error-block" class="error-block">
+        <p class="error-text">Something went wrong</p>
+        <p class="error-sub">Check your connection and try again.</p>
+        <button class="btn-primary" onclick="resetApp()" style="max-width:180px;">Try Again</button>
+    </div>
+
+    <!-- INTRO -->
+    <div id="intro-screen" class="screen active">
+        <div class="intro-header">
+            <div class="app-icon">◈</div>
+            <h1>Communication Style Analyzer</h1>
+            <p class="tagline">10 situational questions. A precise breakdown of how you communicate, what you do well, and where you lose people.</p>
+        </div>
+
+        <div class="intro-features">
+            <div class="feature-item">
+                <span class="feature-icon">⚡</span>
+                <p class="feature-text">
+                    <strong>Situational, not hypothetical</strong>
+                    Questions built around real friction — not idealized preferences.
+                </p>
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon">◎</span>
+                <p class="feature-text">
+                    <strong>Honest profiling</strong>
+                    No flattery. A sharp, grounded read of your actual patterns.
+                </p>
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon">↗</span>
+                <p class="feature-text">
+                    <strong>Built for self-awareness</strong>
+                    Understand how others experience you, not just how you see yourself.
+                </p>
+            </div>
+        </div>
+
+        <div class="auth-buttons">
+            <button class="btn-auth" disabled>Sign In</button>
+            <button class="btn-auth" disabled>Create Account</button>
+        </div>
+
+        <div class="intro-divider"><span>or</span></div>
+
+        <button class="btn-primary" onclick="startApp()">Continue without account</button>
+        <p class="intro-note">Results are not saved without an account.</p>
+    </div>
+
+    <!-- QUESTION -->
+    <div id="question-screen" class="screen">
+        <div class="progress-header">
+            <div class="progress-label" id="progress-indicator">Question 1 of 10</div>
+            <div class="progress-bar-track">
+                <div class="progress-bar-fill" id="progress-bar" style="width:10%"></div>
+            </div>
+        </div>
+        <div class="question-text" id="question-text"></div>
+        <div class="options-container" id="options-container"></div>
+        <div class="nav-controls">
+            <button class="btn-secondary" id="prev-btn" onclick="handlePrev()">← Back</button>
+            <button class="btn-primary"   id="next-btn"   onclick="handleNext()" disabled>Next →</button>
+            <button class="btn-primary"   id="submit-btn" onclick="submitAnswers()" style="display:none;" disabled>Submit</button>
+        </div>
+    </div>
+
+    <!-- LOADING -->
+    <div id="loading-screen" class="screen">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h1 id="loading-text">Analyzing your style...</h1>
+            <p>This takes a few seconds.</p>
+        </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="result-screen" class="screen">
+        <h1>Your Profile</h1>
+        <p style="margin-bottom:20px;">Based on your 10 answers.</p>
+        <div class="results-layout">
+            <div class="result-column">
+                <div class="result-section-label">Detailed Breakdown</div>
+                <div class="result-box" id="result-text"></div>
+            </div>
+            <div class="result-column">
+                <div class="result-section-label">Summary</div>
+                <div class="result-box" id="prose-text"></div>
+            </div>
+        </div>
+        <button class="btn-primary" onclick="resetApp()">Retake</button>
+    </div>
+
+</div>
+
+<script>
+    const ANALYZE_URL = '/analyze';
+    const OPTION_MAP = ["A", "B", "C", "D"];
+
+    let questions = [];
+    let userAnswers = [];
+    let currentQuestionIndex = 0;
+
+    const screens = {
+        intro:    document.getElementById('intro-screen'),
+        question: document.getElementById('question-screen'),
+        loading:  document.getElementById('loading-screen'),
+        result:   document.getElementById('result-screen')
+    };
+
+    const nextBtn      = document.getElementById('next-btn');
+    const prevBtn      = document.getElementById('prev-btn');
+    const submitBtn    = document.getElementById('submit-btn');
+    const errorBlock   = document.getElementById('error-block');
+    const mainContainer = document.getElementById('main-container');
+
+    function showScreen(name) {
+        Object.values(screens).forEach(s => s.classList.remove('active'));
+        errorBlock.classList.remove('active');
+        if (name) screens[name].classList.add('active');
+        mainContainer.classList.toggle('results-expanded', name === 'result');
+    }
+
+    function displayError() {
+        Object.values(screens).forEach(s => s.classList.remove('active'));
+        errorBlock.classList.add('active');
+    }
+
+    async function startApp() {
+        document.getElementById('loading-text').innerText = "Loading questions...";
+        showScreen('loading');
+        try {
+            const res = await fetch(ANALYZE_URL);
+            if (!res.ok) throw new Error();
+            questions = await res.json();
+            if (!questions?.length) throw new Error();
+            userAnswers = new Array(questions.length).fill(null);
+            currentQuestionIndex = 0;
+            renderQuestion();
+            showScreen('question');
+        } catch { displayError(); }
+    }
+
+    function renderQuestion() {
+        const q     = questions[currentQuestionIndex];
+        const total = questions.length;
+        const pct   = ((currentQuestionIndex + 1) / total) * 100;
+
+        document.getElementById('progress-indicator').innerText =
+            `Question ${currentQuestionIndex + 1} of ${total}`;
+        document.getElementById('progress-bar').style.width = `${pct}%`;
+        document.getElementById('question-text').innerText = q.question;
+
+        const container  = document.getElementById('options-container');
+        container.innerHTML = '';
+
+        const saved      = userAnswers[currentQuestionIndex];
+        const savedIndex = saved ? OPTION_MAP.indexOf(saved) : -1;
+
+        q.options.forEach((text, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn' + (i === savedIndex ? ' selected' : '');
+            btn.innerHTML = `<span class="option-label">${OPTION_MAP[i]}</span><span>${text}</span>`;
+            btn.onclick = () => selectOption(i, btn);
+            container.appendChild(btn);
+        });
+
+        const hasSelection = userAnswers[currentQuestionIndex] !== null;
+        const isLast       = currentQuestionIndex === total - 1;
+
+        prevBtn.disabled        = currentQuestionIndex === 0;
+        nextBtn.style.display   = isLast ? 'none'  : 'block';
+        submitBtn.style.display = isLast ? 'block' : 'none';
+        nextBtn.disabled        = !hasSelection;
+        submitBtn.disabled      = !hasSelection;
+    }
+
+    function selectOption(index, btn) {
+        userAnswers[currentQuestionIndex] = OPTION_MAP[index];
+        document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        const isLast = currentQuestionIndex === questions.length - 1;
+        if (isLast) submitBtn.disabled = false;
+        else        nextBtn.disabled   = false;
+    }
+
+    function handleNext() {
+        if (userAnswers[currentQuestionIndex] === null) return;
+        if (currentQuestionIndex < questions.length - 1) {
+            currentQuestionIndex++;
+            renderQuestion();
+        }
+    }
+
+    function handlePrev() {
+        if (currentQuestionIndex > 0) {
+            currentQuestionIndex--;
+            renderQuestion();
+        }
+    }
+
+    document.addEventListener('keydown', e => {
+        if (!screens.question.classList.contains('active')) return;
+        if (e.key === 'ArrowRight') {
+            currentQuestionIndex === questions.length - 1
+                ? (userAnswers[currentQuestionIndex] !== null && submitAnswers())
+                : handleNext();
+        } else if (e.key === 'ArrowLeft') {
+            handlePrev();
+        }
+    });
+
+    async function submitAnswers() {
+        document.getElementById('loading-text').innerText = "Analyzing your communication style...";
+        showScreen('loading');
+        try {
+            const res = await fetch(ANALYZE_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ answers: userAnswers })
+            });
+            if (!res.ok) throw new Error();
+            const data = await res.json();
+            document.getElementById('result-text').innerText = data.profile;
+            document.getElementById('prose-text').innerText  = data.prose;
+            showScreen('result');
+        } catch { displayError(); }
+    }
+
+    function resetApp() {
+        userAnswers = [];
+        currentQuestionIndex = 0;
+        showScreen('intro');
+    }
+</script>
+
+</body>
+</html>

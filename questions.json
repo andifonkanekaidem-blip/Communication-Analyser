@@ -1,0 +1,92 @@
+[
+    {
+        "question": "A coworker sends a long, unclear message asking for help. You:",
+        "options": [
+            "Reply with your best answer based on what you understood, and flag your assumptions at the end",
+            "Send two or three specific questions before attempting any answer",
+            "Explain the broader issue you think they're dealing with, then offer a solution",
+            "Tell them it's easier to talk through and suggest a quick call"
+        ]
+    },
+    {
+        "question": "A colleague presents a plan you think has a serious flaw. The meeting is still ongoing. You:",
+        "options": [
+            "Raise the flaw immediately — the group needs to know before going further",
+            "Ask a question you already know the answer to, hoping they'll catch it themselves",
+            "Let them finish, then open with what works before getting to the problem",
+            "Say nothing in the meeting and bring it up privately afterward"
+        ]
+    },
+    {
+        "question": "You're explaining a technical process to someone who keeps saying they understand but clearly doesn't. You:",
+        "options": [
+            "Strip it down to the single most important point and stop there",
+            "Slow down and walk through each step one at a time from the beginning",
+            "Drop the explanation and show them a real example instead",
+            "Find a completely different analogy and start over from that angle"
+        ]
+    },
+    {
+        "question": "You're in a meeting and the conversation has drifted far off the agenda. There are ten minutes left. You:",
+        "options": [
+            "Cut in and redirect the group back directly, even mid-sentence if needed",
+            "Wait for a natural pause, then steer the conversation back without drawing attention to the drift",
+            "Let it run — the conversation seems valuable even if it's off-topic",
+            "Stay quiet in the meeting but message the organizer afterward about it"
+        ]
+    },
+    {
+        "question": "Your manager gives you a new project. Which handoff would actually help you start faster?",
+        "options": [
+            "A clear instruction: what to do, by when, and what good looks like",
+            "The reasoning behind the project — why it matters and what problem it solves",
+            "An open brief with room to define your own approach",
+            "A conversation where they ask what you think and you figure it out together"
+        ]
+    },
+    {
+        "question": "A close friend is venting about a recurring problem they've had for months. Halfway through you already know what they should do. You:",
+        "options": [
+            "Wait for a gap and give them the solution directly — they need to hear it",
+            "Start asking questions to understand why they keep ending up in the same situation",
+            "Keep listening without offering anything — they probably just need to be heard",
+            "Share a time you dealt with something similar so they feel less alone"
+        ]
+    },
+    {
+        "question": "You're handed a detailed brief for a complex task. Before starting, you:",
+        "options": [
+            "Skim for the key points and start — you'll figure out details as you go",
+            "Convert it into a checklist so you can track progress step by step",
+            "Read everything carefully before touching anything",
+            "Look for a past example of a similar completed task to orient yourself first"
+        ]
+    },
+    {
+        "question": "You and a colleague disagree on which of two approaches to take. Both are valid. You:",
+        "options": [
+            "Make the case for the one you think is better and push until something breaks the tie",
+            "Map out the tradeoffs of each option side by side before either of you advocates for one",
+            "Suggest trying both on a small scale before committing to either",
+            "Ask who else is affected and loop them in before deciding"
+        ]
+    },
+    {
+        "question": "You explained something clearly — or so you thought. The other person completely misunderstood. Your first move is:",
+        "options": [
+            "Say the same thing again but more slowly and directly",
+            "Add more context and background to fill the gap",
+            "Ask them to tell you what they understood so you know where it broke down",
+            "Abandon the current explanation entirely and try a different angle"
+        ]
+    },
+    {
+        "question": "You've received each of these pieces of feedback at some point. Which one actually stung — even a little?",
+        "options": [
+            "You can come across as blunt, even when you don't mean to be harsh",
+            "Sometimes it's hard to know exactly what you're asking for",
+            "You can lose people in the detail before getting to the point",
+            "You can seem disengaged even when you're actually paying attention"
+        ]
+    }
+]
